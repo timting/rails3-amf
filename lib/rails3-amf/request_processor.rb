@@ -1,4 +1,5 @@
 require 'active_support/dependencies'
+require 'active_support/inflector/inflections'
 
 module Rails3AMF
   class RequestProcessor
@@ -32,7 +33,9 @@ module Rails3AMF
       # Parse method and load service
       path = method.split('.')
       method_name = path.pop
+      method_name = method_name.underscore
       controller_name = path.pop
+      controller_name.sub! /Service$/i, 'Controller'
       controller = get_service controller_name, method_name
 
       # Create rack request
