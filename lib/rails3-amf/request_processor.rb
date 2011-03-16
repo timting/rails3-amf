@@ -42,7 +42,9 @@ module Rails3AMF
       new_env = env.dup
       new_env['HTTP_ACCEPT'] = Mime::AMF.to_s # Force amf response
       req = ActionDispatch::Request.new(new_env)
-      req.params.merge!(build_params(controller_name, method_name, args))
+      params = build_params(controller_name, method_name, args)
+      env['rails3amf.params'] = params.merge(:controller => controller_name.sub(/Controller$/, '').downcase.to_sym)
+      req.params.merge!(params)
 
       # Run it
       con = controller.new

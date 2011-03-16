@@ -36,7 +36,30 @@ module Rails3AMF
     def mapped_params controller, action, arguments
       mapped = {}
       if mapping = @param_mappings[controller+"#"+action]
-        arguments.each_with_index {|arg, i| mapped[mapping[i]] = arg}
+
+        arguments.each_with_index do |arg, i| 
+          if mapping[i].is_a? String
+
+            target = mapped
+
+            last_target = nil
+            last_key = nil
+
+            path = mapping[i].split('.')
+            path.each do |key|
+              target[key.to_sym] = {} unless target[key.to_sym].present?
+
+              last_target = target
+              last_key = key.to_sym
+
+              target = target[key.to_sym]
+            end
+            last_target[last_key] = arg
+
+          else
+            mapped[mapping[i]] = arg
+          end
+        end
       end
       mapped
     end
