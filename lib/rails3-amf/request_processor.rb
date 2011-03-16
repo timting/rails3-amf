@@ -73,8 +73,8 @@ module Rails3AMF
       args.each_with_index {|obj, i| params[i] = obj}
       params.merge!(@config.mapped_params(controller_name, method_name, args))
 
-      params = params.merge(params) do |a, v|
-        v = v.attributes if v.respond_to? :attributes
+      params.each do |k,v|
+        params[k] = v.attributes if v.respond_to? :attributes
       end
 
       params
