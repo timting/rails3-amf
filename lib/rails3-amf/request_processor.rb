@@ -15,6 +15,7 @@ module Rails3AMF
     def call env
       return @app.call(env) unless env['rails3amf.response']
 
+      @logger.info "AMF request detected: processing"
       # Handle each method call
       req = env['rails3amf.request']
       res = env['rails3amf.response']
@@ -45,10 +46,12 @@ module Rails3AMF
       params = build_params(controller_name, method_name, args)
       env['rails3amf.params'] = params.merge(:controller => controller_name.sub(/Controller$/, '').downcase.to_sym)
       req.params.merge!(params)
+      @logger.info "Rack request created"
 
       # Run it
       con = controller.new
       res = con.dispatch(method_name, req)
+      @logger.info "Rack request run"
       return con.amf_response
     end
 

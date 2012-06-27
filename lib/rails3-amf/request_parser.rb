@@ -25,6 +25,8 @@ module Rails3AMF
       if env['rails3amf.response'].constructed?
         @logger.info "Sending back AMF"
         response = env['rails3amf.response'].to_s
+
+        @logger.info "Response: #{response}"
         return [200, {"Content-Type" => Mime::AMF.to_s, 'Content-Length' => response.length.to_s}, [response]]
       else
         return result
