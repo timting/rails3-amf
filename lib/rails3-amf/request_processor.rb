@@ -20,6 +20,7 @@ module Rails3AMF
       req = env['rails3amf.request']
       res = env['rails3amf.response']
       res.each_method_call req do |method, args|
+        @logger.info "Calling method #{method}"
         begin
           handle_method method, args, env
         rescue Exception => e

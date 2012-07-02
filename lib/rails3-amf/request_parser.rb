@@ -24,9 +24,20 @@ module Rails3AMF
       # Calculate length and return response
       if env['rails3amf.response'].constructed?
         @logger.info "Sending back AMF"
-        response = env['rails3amf.response'].to_s
+        begin
+          response = env['rails3amf.response'].to_s
+        rescue SystemStackError => e
+          File.open('systemstackerror.log', 'a') do |file|
+            file.write("\n\n\nSystemStackError occurred at #{Time.now}")
+            file.write("\n\nenv: #{env}".force_encoding("UTF-8"))
+            file.write("\n\nrequest: #{env['rails3amf.request']}".force_encoding("UTF-8"))
+            file.write("\n\nresponse: #{env['rails3amf.response']}".force_encoding("UTF-8"))
+          end
 
-        @logger.info "Response: #{response}"
+          raise e
+        end
+
+        @logger.info "Responding"
         return [200, {"Content-Type" => Mime::AMF.to_s, 'Content-Length' => response.length.to_s}, [response]]
       else
         return result
