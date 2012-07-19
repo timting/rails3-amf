@@ -26,12 +26,15 @@ module Rails3AMF
         @logger.info "Sending back AMF"
         begin
           response = env['rails3amf.response'].to_s
-        rescue SystemStackError => e
+        rescue Exception => e
           File.open('systemstackerror.log', 'a') do |file|
-            file.write("\n\n\nSystemStackError occurred at #{Time.now}")
-            file.write("\n\nenv: #{env}".force_encoding("UTF-8"))
-            file.write("\n\nrequest: #{env['rails3amf.request']}".force_encoding("UTF-8"))
-            file.write("\n\nresponse: #{env['rails3amf.response']}".force_encoding("UTF-8"))
+            file.write("\n\n\nError occurred at #{Time.now}")
+            file.write("\n\n#{e.inspect}")
+            file.write("\n\nAMF Version: #{env['rails3amf.response'].amf_version}".force_encoding("UTF-8"))
+            file.write("\n\nHeaders: #{env['rails3amf.response'].headers}".force_encoding("UTF-8"))
+            file.write("\n\nMessages: #{env['rails3amf.response'].messages}".force_encoding("UTF-8"))
+            file.write("\n\nrequest: #{env['rails3amf.request'].inspect}".force_encoding("UTF-8"))
+            file.write("\n\nresponse: #{env['rails3amf.response'].inspect}".force_encoding("UTF-8"))
           end
 
           raise e
